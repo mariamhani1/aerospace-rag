@@ -60,38 +60,41 @@ def get_relevant_image(query_text):
     return top_point.payload['image_filename'], top_point.score
 
 # --- Streamlit UI ---
-st.set_page_config(layout="wide", page_title="Retro Aerospace RAG")
+st.set_page_config(layout="wide", page_title="Aerospace RAG")
 
 st.markdown("""
 <style>
-    /* Retro Terminal Styling */
+    /* Aerospace Theme Styling */
     .stApp {
-        background-color: #0d1117;
+        background-color: #0b101e; /* Deep Space Blue */
     }
     h1, h2, h3, h4, p, label, .stMarkdown {
-        color: #39ff14 !important;
-        font-family: 'Courier New', Courier, monospace !important;
+        color: #e2e8f0 !important; /* Star White */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
     }
     .stTextInput>div>div>input {
-        color: #39ff14 !important;
-        background-color: #000000 !important;
-        border: 1px solid #39ff14 !important;
-        font-family: 'Courier New', Courier, monospace !important;
+        color: #ffffff !important;
+        background-color: #162032 !important; /* Cockpit Panel Blue */
+        border: 1px solid #334155 !important;
+    }
+    .stTextInput>div>div>input:focus {
+        border: 1px solid #38bdf8 !important; /* Tech Cyan Accent */
     }
     .stImage > img {
-        border: 2px solid #39ff14;
-        border-radius: 5px;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
     hr {
-        border-color: #39ff14;
+        border-color: #334155;
     }
     .stSpinner > div > div {
-        border-top-color: #39ff14 !important;
+        border-top-color: #38bdf8 !important; /* Cyan loading spinner */
     }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🚀 Retro Aerospace Multi-Modal RAG")
+st.title("🚀 Aerospace Multi-Modal RAG")
 
 col1, col2 = st.columns([1, 1])
 
@@ -118,7 +121,14 @@ with col1:
             
         with st.spinner("Local M4 VLM Reading Image..."):
             
-            prompt = f"Using the provided image, answer this question: {user_query}. If the information is not visible in the image, strictly respond with 'I do not have enough information from this page to answer.'"            
+            prompt = (
+                f"You are a helpful Aerospace Engineering AI. Answer the user's question: '{user_query}'\n\n"
+                "Instructions:\n"
+                "1. Use the provided image as your primary source of truth.\n"
+                "2. If the image contains the answer, extract it and explain it clearly.\n"
+                "3. If the image only provides partial context (e.g., it's a title page or a diagram), you may combine it with your general knowledge to provide a fully helpful answer.\n"
+                "4. Be informative and do NOT overly restrict yourself from answering basic definitions."
+            )
             messages = [{"role": "user", "content": [{"type": "text", "text": prompt}]}]
             formatted_prompt = vlm_processor.apply_chat_template(
                 messages, tokenize=False, add_generation_prompt=True,
